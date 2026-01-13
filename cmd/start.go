@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ashish0kumar/typtea/internal/game"
-	"github.com/ashish0kumar/typtea/internal/tui"
+	"github.com/hwyll/typtea/internal/game"
+	"github.com/hwyll/typtea/internal/tui"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
 var (
-	duration int    // Duration of the typing test in seconds
-	language string // Language for the typing test, default is "en"
-	listLangs bool  // Flag to list all available languages
+	duration  int    // Duration of the typing test in seconds
+	language  string // Language for the typing test, default is "en"
+	listLangs bool   // Flag to list all available languages
 )
 
 // startCmd represents the start command for the typing test

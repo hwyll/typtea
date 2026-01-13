@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ashish0kumar/typtea/internal/game"
+	"github.com/hwyll/typtea/internal/game"
 
 	tea "github.com/charmbracelet/bubbletea"
 )

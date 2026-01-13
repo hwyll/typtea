@@ -68,13 +68,13 @@ nix profile install nixpkgs#typtea
 ### Via `go install`
 
 ```bash
-go install github.com/ashish0kumar/typtea@latest
+go install github.com/hwyll/typtea@latest
 ```
 
 ### Build from Source
 
 ```bash
-git clone --depth=1 https://github.com/ashish0kumar/typtea
+git clone --depth=1 https://github.com/hwyll/typtea
 cd typtea/
 go build
 sudo mv typtea /usr/local/bin/
@@ -126,7 +126,7 @@ typtea start --help
 ### Setup
 
 ```bash
-git clone https://github.com/ashish0kumar/typtea.git
+git clone https://github.com/hwyll/typtea.git
 cd typtea
 go mod tidy
 go build

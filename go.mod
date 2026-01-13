@@ -1,4 +1,4 @@
-module github.com/ashish0kumar/typtea
+module github.com/hwyll/typtea
 
 go 1.23.2
 

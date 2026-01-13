@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ashish0kumar/typtea/cmd"
+	"github.com/hwyll/typtea/cmd"
 )
 
 func main() {
