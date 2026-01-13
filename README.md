@@ -134,8 +134,11 @@ go build
 - [**Cobra**](https://github.com/spf13/cobra) - CLI framework
 
 ## License & Attribution
-Original work &copy 2025-present [Ashish Kumar](https://github.com/ashish0kumar)  
-Fork modifications &copy 2026-present [hwyll](https://github.com/hwyll)
+<p align="left">
+        <i><code>Original work &copy; 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
+        <br>
+        <i><code>Fork modifications &copy; 2025-present <a href="https://github.com/hwyll">hwyll</a></code></i>
+</p>
 
 Forked from [ashish0kumar/typtea](https://github.com/ashish0kumar/typtea)
 
