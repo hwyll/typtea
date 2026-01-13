@@ -8,15 +8,6 @@
 
 <br>
 
-<p align="center">
-  <i>Featured on</i>
-</p>
-<p align="center">
-  <a href="https://terminaltrove.com/typtea/">
-    <img width="25%" alt="Terminal Trove logo" src="https://github.com/user-attachments/assets/f85b1470-a574-4bc2-b002-4e6dddb9e277" />
-  </a>
-</p>
-
 ---
 
 ## Features
@@ -47,22 +38,10 @@
 
 ## Installation
 
-### Arch Linux (AUR)
+### Via brew
 
 ```bash
-yay -S typtea
-```
-
-### Void Linux
-
-```bash
-sudo xbps-install -S typtea
-```
-
-### Nix
-
-```bash
-nix profile install nixpkgs#typtea
+brew install hwyll/tap/typtea
 ```
 
 ### Via `go install`
@@ -148,38 +127,19 @@ go build
 
 ---
 
-## Community Extensions
-
-Looking for persistent stats or a database-backed version of typtea?
-
-Check out [PR #1: Database for storing stats](https://github.com/ashish0kumar/typtea/pull/1), which adds SQLite-based session tracking and best-score display.  
-This feature is not in the main branch to keep typtea minimal, but you can use it if you want to track your typing history.
-
 ## Dependencies
 
 - [**Bubble Tea**](https://github.com/charmbracelet/bubbletea) - TUI framework
 - [**Lipgloss**](https://github.com/charmbracelet/lipgloss) - Styling and layout
 - [**Cobra**](https://github.com/spf13/cobra) - CLI framework
 
-## Contributing
-
-Contributions are always welcome! If you have ideas, bug reports, or want to submit code, please feel free to open an issue or a pull request.
-
-## Contributors
-
-<a href="https://github.com/ashish0kumar/typtea/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ashish0kumar/typtea" />
-</a>
-
-<br>
-
-<p align="center">
-	<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/footers/gray0_ctp_on_line.svg?sanitize=true" />
-</p>
-
+## Original Author
 <p align="center">
         <i><code>&copy 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
 </p>
+
+## Fork Information
+This is a fork of [ashish0kumar/typtea](https://github.com/ashish0kumar/typtea) maintained by [hwyll](https://github.com/hwyll).
 
 <div align="center">
 <a href="https://github.com/ashish0kumar/typtea/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/typtea?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
