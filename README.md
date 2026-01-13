@@ -133,14 +133,12 @@ go build
 - [**Lipgloss**](https://github.com/charmbracelet/lipgloss) - Styling and layout
 - [**Cobra**](https://github.com/spf13/cobra) - CLI framework
 
-## Original Author
-<p align="center">
-        <i><code>&copy 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
-</p>
+## License & Attribution
+Original work &copy 2025-present [Ashish Kumar](https://github.com/ashish0kumar)  
+Fork modifications &copy 2026-present [hwyll](https://github.com/hwyll)
 
-## Fork Information
-This is a fork of [ashish0kumar/typtea](https://github.com/ashish0kumar/typtea) maintained by [hwyll](https://github.com/hwyll).
+Forked from [ashish0kumar/typtea](https://github.com/ashish0kumar/typtea)
 
 <div align="center">
-<a href="https://github.com/ashish0kumar/typtea/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ashish0kumar/typtea?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
+<a href="https://github.com/hwyll/typtea/blob/main/LICENSE"><img src="https://img.shields.io/github/license/hwyll/typtea?style=for-the-badge&color=CBA6F7&logoColor=cdd6f4&labelColor=302D41" alt="LICENSE"></a>&nbsp;&nbsp;
 </div>
