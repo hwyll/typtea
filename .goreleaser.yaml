@@ -1,48 +1,35 @@
-# .goreleaser.yaml
 version: 1
-
 project_name: typtea
-
 before:
   hooks:
     - go mod tidy
     - go mod download
-
 builds:
-  - id: typtea
+  - id: build-mac
     main: ./main.go
     binary: typtea
     env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
     goarch:
       - amd64
       - arm64
     ldflags:
-      - -s -w -X github.com/ashish0kumar/typtea/cmd.version={{.Version}}
-
+      - -s -w -X github.com/hwyll/typtea/cmd.version={{.Version}}
 archives:
-  - id: default
+  - id: release
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: >-
-      {{ .ProjectName }}_
-      {{- .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    files:
-      - README.md
-      - LICENSE
-
+      {{- .ProjectName }}-
+      {{- .Version }}-
+      {{- if eq .Os "darwin" }}mac
+      {{- else}}{{ .Os }}{{ end }}-
+      {{- .Arch }}
+snapshot:
+  name_template: "{{ .Tag }}-next"
 checksum:
-  name_template: 'checksums.txt'
-
+  name_template: "{{ .ProjectName }}-{{ .Version }}-checksums.txt"
 changelog:
   sort: asc
   filters:
@@ -52,7 +39,25 @@ changelog:
       - '^chore:'
       - '^ci:'
       - '^build:'
-
 release:
+  github:
+    owner: hwyll
+    name: typtea
   draft: false
   prerelease: auto
+brews:
+  - name: typtea
+    repository:
+      owner: hwyll
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    folder: Formula
+    commit_author:
+      name: hwyll
+      email: hwyll@users.noreply.github.com
+    homepage: "https://github.com/hwyll/typtea"
+    description: "Terminal based typing test"
+    license: "MIT"
+    install: |
+      bin.install "typtea"
+
