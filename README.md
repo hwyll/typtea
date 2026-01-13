@@ -137,7 +137,7 @@ go build
 <p align="left">
         <i><code>Original work &copy; 2025-present <a href="https://github.com/ashish0kumar">Ashish Kumar</a></code></i>
         <br>
-        <i><code>Fork modifications &copy; 2025-present <a href="https://github.com/hwyll">hwyll</a></code></i>
+        <i><code>Fork modifications &copy; 2026-present <a href="https://github.com/hwyll">hwyll</a></code></i>
 </p>
 
 Forked from [ashish0kumar/typtea](https://github.com/ashish0kumar/typtea)
