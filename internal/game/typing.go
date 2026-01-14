@@ -5,6 +5,25 @@ import (
 	"time"
 )
 
+// GameMode represents the type of typing test
+type GameMode int
+
+const (
+	Time GameMode = iota // Time-based test
+	Word                 // Word count-based test
+)
+
+func (m GameMode) String() string {
+	switch m {
+	case Time:
+		return "time"
+	case Word:
+		return "word"
+	default:
+		return "unknown"
+	}
+}
+
 // TypingStats holds the statistics for a game session
 type TypingStats struct {
 	WPM               float64
@@ -25,21 +44,39 @@ type TypingGame struct {
 	CurrentPos      int
 	GlobalPos       int
 	StartTime       time.Time
-	Duration        int
 	IsStarted       bool
-	IsFinished      bool
 	Errors          map[int]bool
 	TotalErrorsMade int
 	LinesPerView    int
 	CharsPerLine    int
 	WordsTyped      int
+
+	// Mode configuration
+	Mode        GameMode
+	Duration    int // For Time mode (seconds)
+	TargetWords int // For Word mode (word count)
 }
 
-// NewTypingGame initializes a new TypingGame instance with a specified duration
-func NewTypingGame(duration int) *TypingGame {
+// NewTimeGame creates a time-based typing game
+func NewTimeGame(duration int) *TypingGame {
 	game := &TypingGame{
 		AllWords:     GenerateWords(200),
 		Duration:     duration,
+		Mode:         Time,
+		Errors:       make(map[int]bool),
+		LinesPerView: 3,
+		CharsPerLine: 50,
+	}
+	game.generateDisplayLines()
+	return game
+}
+
+// NewWordGame creates a word count-based typing game
+func NewWordGame(wordCount int) *TypingGame {
+	game := &TypingGame{
+		AllWords:     GenerateWords(wordCount),
+		TargetWords:  wordCount,
+		Mode:         Word,
 		Errors:       make(map[int]bool),
 		LinesPerView: 3,
 		CharsPerLine: 50,
@@ -50,7 +87,12 @@ func NewTypingGame(duration int) *TypingGame {
 
 // Reset reinitializes the game to a fresh state
 func (g *TypingGame) Reset() {
-	*g = *NewTypingGame(g.Duration)
+	switch g.Mode {
+	case Time:
+		*g = *NewTimeGame(g.Duration)
+	case Word:
+		*g = *NewWordGame(g.TargetWords)
+	}
 }
 
 // generateDisplayLines creates the initial display lines based on the words available
@@ -113,14 +155,29 @@ func (g *TypingGame) Start() {
 	}
 }
 
+// IsFinished checks if the game has completed based on the current mode
+func (g *TypingGame) IsFinished() bool {
+	if !g.IsStarted {
+		return false
+	}
+
+	switch g.Mode {
+	case Time:
+		return g.IsTimeUp()
+	case Word:
+		return g.GetWordsTyped() >= g.TargetWords
+	default:
+		return false
+	}
+}
+
 // AddCharacter handles user input and updates game state
 func (g *TypingGame) AddCharacter(char rune) {
 	if !g.IsStarted {
 		g.Start()
 	}
 
-	if g.IsFinished || g.IsTimeUp() {
-		g.IsFinished = true
+	if g.IsFinished() {
 		return
 	}
 
@@ -151,7 +208,7 @@ func (g *TypingGame) AddCharacter(char rune) {
 
 // HandleEnterKey handles Enter key press for line progression
 func (g *TypingGame) HandleEnterKey() bool {
-	if g.IsFinished || g.IsTimeUp() {
+	if g.IsFinished() {
 		return false
 	}
 
@@ -179,8 +236,8 @@ func (g *TypingGame) shiftLines() {
 	// Generate new lines
 	g.generateDisplayLines()
 
-	// Extend words if needed
-	if g.WordsTyped > len(g.AllWords)-50 {
+	// Only extend words in Time mode (infinite words)
+	if g.Mode == Time && g.WordsTyped > len(g.AllWords)-50 {
 		newWords := GenerateWords(100)
 		g.AllWords = append(g.AllWords, newWords...)
 	}
@@ -201,6 +258,37 @@ func (g *TypingGame) RemoveCharacter() {
 // GetDisplayText returns the current text to be displayed in the game
 func (g *TypingGame) GetDisplayText() string {
 	return strings.Join(g.DisplayLines, " ")
+}
+
+// GetWordsTyped returns the current number of words typed (only counts complete words)
+func (g *TypingGame) GetWordsTyped() int {
+	// Words from completed lines
+	completedWords := g.WordsTyped
+
+	// Count complete words on the current line (words followed by space)
+	if g.CurrentPos > 0 && len(g.DisplayLines) > 0 {
+		currentLineText := g.DisplayLines[0]
+		if g.CurrentPos <= len(currentLineText) {
+			typedPortion := currentLineText[:g.CurrentPos]
+
+			// Count words only if the last character is a space
+			// This means the word is complete
+			trimmed := strings.TrimRight(typedPortion, " ")
+			if len(trimmed) > 0 {
+				words := strings.Fields(trimmed)
+				// Only count if we've typed a space after the last word
+				if typedPortion != trimmed {
+					return completedWords + len(words)
+				}
+				// Still typing the last word, don't count it
+				if len(words) > 0 {
+					return completedWords + len(words) - 1
+				}
+			}
+		}
+	}
+
+	return completedWords
 }
 
 // GetStats calculates and returns the typing statistics for the current game session
@@ -249,26 +337,44 @@ func (g *TypingGame) GetStats() TypingStats {
 		CorrectChars:      correctChars,
 		TotalChars:        len([]rune(g.GetDisplayText())),
 		TimeElapsed:       elapsed,
-		IsComplete:        g.IsFinished,
+		IsComplete:        g.IsFinished(),
 		UncorrectedErrors: uncorrectedErrors,
 	}
 }
 
-// IsTimeUp checks if the game time has exceeded the specified duration
+// IsTimeUp checks if the game time has exceeded the specified duration (Time mode only)
 func (g *TypingGame) IsTimeUp() bool {
-	if !g.IsStarted {
+	if !g.IsStarted || g.Mode != Time {
 		return false
 	}
 	return time.Since(g.StartTime).Seconds() >= float64(g.Duration)
 }
 
-// GetRemainingTime returns the remaining time in seconds for the game
+// GetRemainingTime returns the remaining time in seconds for Time mode
 func (g *TypingGame) GetRemainingTime() int {
+	if g.Mode != Time {
+		return 0
+	}
+
 	if !g.IsStarted {
 		return g.Duration
 	}
+
 	elapsed := int(time.Since(g.StartTime).Seconds())
 	remaining := g.Duration - elapsed
+	if remaining < 0 {
+		return 0
+	}
+	return remaining
+}
+
+// GetRemainingWords returns the remaining words for Word mode
+func (g *TypingGame) GetRemainingWords() int {
+	if g.Mode != Word {
+		return 0
+	}
+
+	remaining := g.TargetWords - g.GetWordsTyped()
 	if remaining < 0 {
 		return 0
 	}

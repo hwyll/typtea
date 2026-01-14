@@ -17,28 +17,45 @@ type Model struct {
 	showResults bool
 	finalStats  game.TypingStats
 	duration    int
+	wordCount   int
 	language    string
 }
 
 // tickMsg is a message type used to handle periodic updates in the application
 type tickMsg time.Time
 
-// NewModel initializes a new Model instance with the specified duration and language
-func NewModel(duration int, language string) (*Model, error) {
+// NewModel initializes a new Model instance with the specified mode, duration, word count, and language
+func NewModel(mode game.GameMode, duration int, wordCount int, language string) (*Model, error) {
 	if err := game.SetLanguage(language); err != nil {
 		return nil, fmt.Errorf("failed to load language '%s': %v", language, err)
 	}
 
+	var typingGame *game.TypingGame
+	switch mode {
+	case game.Time:
+		typingGame = game.NewTimeGame(duration)
+	case game.Word:
+		typingGame = game.NewWordGame(wordCount)
+	default:
+		return nil, fmt.Errorf("invalid game mode")
+	}
+
 	return &Model{
-		game:     game.NewTypingGame(duration),
-		duration: duration,
-		language: language,
+		game:      typingGame,
+		duration:  duration,
+		wordCount: wordCount,
+		language:  language,
 	}, nil
 }
 
 // restartTest resets the game state for a new typing test session
 func (m *Model) restartTest() {
-	m.game = game.NewTypingGame(m.duration)
+	switch m.game.Mode {
+	case game.Time:
+		m.game = game.NewTimeGame(m.duration)
+	case game.Word:
+		m.game = game.NewWordGame(m.wordCount)
+	}
 	m.showResults = false
 	m.finalStats = game.TypingStats{}
 }

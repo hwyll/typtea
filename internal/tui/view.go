@@ -5,10 +5,13 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/hwyll/typtea/internal/game"
 )
 
-const statGap = 5
-const spacer = ""
+const (
+	statGap = 5
+	spacer  = ""
+)
 
 // View renders the current state of the Model as a string for display
 func (m Model) View() string {
@@ -18,8 +21,15 @@ func (m Model) View() string {
 
 	var sections []string
 
-	timer := m.renderTimer()
-	sections = append(sections, timer)
+	// Show timer for time mode, word counter for word mode
+	switch m.game.Mode {
+	case game.Time:
+		timer := m.renderTimer()
+		sections = append(sections, timer)
+	case game.Word:
+		wordCounter := m.renderWordCounter()
+		sections = append(sections, wordCounter)
+	}
 
 	textDisplay := m.renderText()
 	sections = append(sections, textDisplay)
@@ -37,6 +47,14 @@ func (m Model) View() string {
 func (m Model) renderTimer() string {
 	remaining := m.game.GetRemainingTime()
 	return timeStyle.Render(fmt.Sprintf("%d", remaining))
+}
+
+// renderWordCounter formats the word progress for display
+func (m Model) renderWordCounter() string {
+	remaining := m.game.GetRemainingWords()
+	total := m.game.TargetWords
+	completed := total - remaining
+	return timeStyle.Render(fmt.Sprintf("%d/%d words", completed, total))
 }
 
 // renderText formats the text display with appropriate styles for typed, current, untyped characters

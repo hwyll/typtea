@@ -15,24 +15,34 @@ var (
 	duration  int    // Duration of the typing test in seconds
 	language  string // Language for the typing test, default is "en"
 	listLangs bool   // Flag to list all available languages
+	wordCount int    // Number of words for word mode
+	mode      string // Game mode: "time" or "word"
 )
 
 // startCmd represents the start command for the typing test
 var startCmd = &cobra.Command{
 	Use:   "start",
 	Short: "Start a typing test",
-	Long:  "Start a new typing test session with customizable duration and language",
-	Example: `  typtea start --duration 60 --lang python
+	Long:  "Start a new typing test session with customizable duration, word count, and language",
+	Example: `  # Time mode (default)
+  typtea start --duration 60 --lang python
   typtea start -d 30 -l javascript
-  typtea start --lang go
+
+  # Word mode
+  typtea start --mode word --words 100
+  typtea start -m word -w 50 -l go
+
+  # List available languages
   typtea start --list-langs`,
 	RunE: runTypingTest,
 }
 
 func init() {
-	startCmd.Flags().IntVarP(&duration, "duration", "d", 30, "Test duration in seconds (10-300)")
+	startCmd.Flags().IntVarP(&duration, "duration", "d", 30, "Test duration in seconds (10-300) for time mode")
 	startCmd.Flags().StringVarP(&language, "lang", "l", "en", "Language for typing test")
 	startCmd.Flags().BoolVar(&listLangs, "list-langs", false, "List all available languages")
+	startCmd.Flags().IntVarP(&wordCount, "words", "w", 50, "Number of words (10-500) for word mode")
+	startCmd.Flags().StringVarP(&mode, "mode", "m", "time", "Game mode: 'time' or 'word'")
 }
 
 // runTypingTest runs the typing test or lists languages if requested
@@ -49,11 +59,6 @@ func runTypingTest(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	// Validate duration
-	if duration < 10 || duration > 300 {
-		return fmt.Errorf("duration must be between 10 and 300 seconds (e.g., --duration 60)")
-	}
-
 	// Validate language availability
 	if !langManager.IsLanguageAvailable(language) {
 		available := langManager.GetAvailableLanguages()
@@ -62,8 +67,25 @@ func runTypingTest(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("invalid language: %s", language)
 	}
 
+	// Validate and determine game mode
+	var gameMode game.GameMode
+	switch mode {
+	case "time":
+		if duration < 10 || duration > 300 {
+			return fmt.Errorf("duration must be between 10 and 300 seconds")
+		}
+		gameMode = game.Time
+	case "word":
+		if wordCount < 10 || wordCount > 500 {
+			return fmt.Errorf("word count must be between 10 and 500")
+		}
+		gameMode = game.Word
+	default:
+		return fmt.Errorf("invalid mode: %s (must be 'time' or 'word')", mode)
+	}
+
 	// Create a new typing test model
-	model, err := tui.NewModel(duration, language)
+	model, err := tui.NewModel(gameMode, duration, wordCount, language)
 	if err != nil {
 		return fmt.Errorf("error creating typing test: %w", err)
 	}
